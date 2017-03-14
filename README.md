@@ -11,4 +11,4 @@ Make sure you have python3 installed.
 
 Then type the following to get started.
 
-    python3 battleship.y
+    python3 battleship.py
