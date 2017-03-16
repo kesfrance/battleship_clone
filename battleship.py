@@ -92,7 +92,9 @@ def game_loop(players):
         if count > 0:
             break
         while True:
-            inp = input("It's Player 2 turn \n Press ENTER to continue")
+            clear_screen()
+            inp = input("It's {} turn \n Press ENTER to continue".format(
+                        format(players[count+1].player_name)))
             if not inp:
                 clear_screen()
                 count += 1
@@ -102,15 +104,14 @@ def game_loop(players):
 
 
 def attack(players):
-    print("All ships placed on board. Ready to attack now")
     killer = 0
     while True:
         opponent = killer != 1 and 1 or 0
         if players[0].occupied_cords and players[1].occupied_cords:
             clear_screen()
             players[killer].print_board(1)
-            print("{} your board is above".format(players[killer].player_name))
-            print()
+            print("{} your board above".format(players[killer].player_name))
+            print("\n")
             players[opponent].print_board(2)
             print("{} your turn to shoot now".format(
                                             players[killer].player_name))
@@ -120,19 +121,24 @@ def attack(players):
                 shot_cords = shot_to_loci(shot)
                 print("boom!! shooting at {}'s ship".format(
                                             players[opponent].player_name))
+
                 if shot_cords in players[opponent].occupied_cords:
                     print("Good shot!!. Thats a hit")
                     players[opponent].process_hit_shots(shot_cords)
                     players[killer].score += 5
+
                     if players[opponent].is_ship_sunk(shot_cords):
                         players[opponent].mark_ship_as_sunk()
                         print("You have sunk an entire ship. Great.!!!")
+
                 elif shot_cords in players[opponent].already_shot_cords:
-                    print("whoops!! You shot that place previously")
-                    continue
+                    msg = input("already shot location. Try again. Hit ENTER")
+                    if not msg or msg:
+                        continue
                 else:
                     players[opponent].process_missed_shot(shot_cords)
                     print("Noo!! that's a miss")
+
                 # a prompt to let user press enter
                 switch = input("Press ENTER for {} turn".format(
                                             players[opponent].player_name))
@@ -140,6 +146,7 @@ def attack(players):
                     pass
                 killer += 1
                 killer = (killer % 2)
+
             else:
                 # a prompt to let user press enter
                 prompt = input("Not a valid location. Hit ENTER to try again")
@@ -149,12 +156,17 @@ def attack(players):
             clear_screen()
             print("#" * 20)
             print("GAME OVER: FINAL SCORE BELOW")
+
             for ply in players:
                 print(ply)
+                print("{} Your board below".format(ply.player_name))
+                ply.print_board(1)
+                print("\n")
+
             if players[0].occupied_cords:
                 print("Winner is {} Good job".format(players[0].player_name))
             else:
-                print("Winner is {}. Good Job.".format(players[1].player_name))
+                print("Winner is {}. Great!!".format(players[1].player_name))
             break
 
 
@@ -163,4 +175,11 @@ if __name__ == "__main__":
     player_2 = Player()
     players = [player_1, player_2]
     game_loop(players)
+    while True:
+        clear_screen()
+        prompt = input("All ships on board now. Hit ENTER to start attacking")
+        if not prompt:
+            break
+        else:
+            continue
     attack(players)
